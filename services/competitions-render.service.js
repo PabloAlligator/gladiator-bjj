@@ -21,10 +21,10 @@ export async function renderCompetition(config, entry, people, preview = false) 
     ['Организатор', e(entry.organizer)]
   ];
   const participants = people.filter(person => entry.participants.includes(person.id));
-  const body = `<dl class="events-facts">
+  const cover = entry.image ? eventImage(fileUrl(entry.image), entry.imageAlt || entry.title, entry.imageCaption, entry.imageCredit) : '';
+  const body = `${cover}<dl class="events-facts">
     ${facts.filter(([, value]) => value).map(([name, value]) => `<div><dt>${name}</dt><dd>${value}</dd></div>`).join('')}
   </dl>
-  ${entry.image ? eventImage(fileUrl(entry.image), entry.imageAlt || entry.title, entry.imageCaption, entry.imageCredit) : ''}
   ${entry.description ? section('О соревновании', `<div class="events-prose">${paragraphs(entry.description)}</div>`) : ''}
   ${entry.program.length ? section('Программа', `<ul class="events-program">${entry.program.map(item => `<li>
     ${item.time ? `<span>${e(item.time)}</span>` : ''}

@@ -78,6 +78,7 @@ input[type=button], input[type=submit], input[type=reset],
   top: 12px;
 }
 .admin .sidebar {
+  --menu-accent: #eec453;
   width: 250px;
   position: fixed;
   inset: 0 auto 0 0;
@@ -130,9 +131,12 @@ input[type=button], input[type=submit], input[type=reset],
   background: #23324c;
 }
 .admin .navigation a[aria-current] {
-  background: var(--red);
-  color: white;
+  background: var(--menu-accent);
+  color: var(--navy);
   font-weight: 600;
+}
+.admin .navigation a[aria-current] .icon {
+  filter: brightness(0);
 }
 .admin .navigation button {
   opacity: 0.55;
@@ -1274,7 +1278,7 @@ input[type=button], input[type=submit], input[type=reset],
   font-weight: 600;
   transition: color 0.16s ease, background-color 0.16s ease;
 }
-.admin .navigation a[aria-current] {
+.admin .navigation a[data-selected] {
   background: transparent;
 }
 .admin .navigation a[data-selected]:hover {
@@ -1284,7 +1288,7 @@ input[type=button], input[type=submit], input[type=reset],
   position: absolute;
   inset: 0 0 auto;
   border-radius: 7px;
-  background: var(--red);
+  background: var(--menu-accent);
   pointer-events: none;
   z-index: 0;
   transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.2, 1), height 0.2s ease;

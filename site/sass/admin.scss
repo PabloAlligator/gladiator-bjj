@@ -13,12 +13,13 @@
   h1 { font-size: clamp(28px, 3.1vw, 42px); } h2 { font-size: 26px; } h3 { font-size: 17px; }
   .icon { width: 21px; height: 21px; vertical-align: middle; flex-shrink: 0; }
   &__skip { position: fixed; left: 15px; top: -100px; z-index: 50; padding: 12px; background: white; &:focus { top: 12px; } }
-  .sidebar { width: 250px; position: fixed; inset: 0 auto 0 0; background: var(--navy); color: #e8edf5; padding: 28px 10px 20px; display: flex; flex-direction: column; z-index: 20; overflow-y: auto; }
+  .sidebar { --menu-accent: #eec453; width: 250px; position: fixed; inset: 0 auto 0 0; background: var(--navy); color: #e8edf5; padding: 28px 10px 20px; display: flex; flex-direction: column; z-index: 20; overflow-y: auto; }
   .brand { display: flex; gap: 12px; align-items: center; padding: 0 12px 30px; text-decoration: none; font: 500 18px/1.1 'Oswald',sans-serif; }
   .brand img { flex-shrink: 0; width: 58px; height: 58px; border-radius: 50%; object-fit: contain; }
   .navigation { display: grid; gap: 5px; } .navigation a, .navigation button { display: flex; align-items: center; gap: 16px; min-height: 54px; padding: 12px 17px; text-align: left; color: inherit; text-decoration: none; background: none; border: 0; border-radius: 7px; width: 100%; }
   .navigation .icon { filter: brightness(0) invert(1); opacity: .9; }
-  .navigation a:hover { background: #23324c; } .navigation a[aria-current] { background: var(--red); color: white; font-weight: 600; }
+  .navigation a:hover { background: #23324c; } .navigation a[aria-current] { background: var(--menu-accent); color: var(--navy); font-weight: 600; }
+  .navigation a[aria-current] .icon { filter: brightness(0); }
   .navigation button { opacity: .55; font-size: 13px; } .navigation small { margin-left: auto; font-size: 10px; }
   .sidebar__bottom { margin-top: auto; padding: 32px 16px 0; color: #b9c5d8; font-size: 12px; } .sidebar .sidebar__close { display: none; }
   .workspace { margin-left: 250px; min-width: 0; padding: 0 30px 40px; }
@@ -180,9 +181,9 @@
 .admin {
   .navigation { position: relative; isolation: isolate; }
   .navigation a { position: relative; z-index: 1; font-weight: 600; transition: color .16s ease, background-color .16s ease; }
-  .navigation a[aria-current] { background: transparent; }
+  .navigation a[data-selected] { background: transparent; }
   .navigation a[data-selected]:hover { background: transparent; }
-  .navigation__indicator { position: absolute; inset: 0 0 auto; border-radius: 7px; background: var(--red); pointer-events: none; z-index: 0; transition: transform .2s cubic-bezier(.2,.7,.2,1), height .2s ease; }
+  .navigation__indicator { position: absolute; inset: 0 0 auto; border-radius: 7px; background: var(--menu-accent); pointer-events: none; z-index: 0; transition: transform .2s cubic-bezier(.2,.7,.2,1), height .2s ease; }
   .navigation--instant .navigation__indicator { transition: none; }
   .admin-view, #admin-view-slot { min-width: 0; }
   &.admin--navigating .admin-view { pointer-events: none; }

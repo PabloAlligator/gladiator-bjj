@@ -5,7 +5,7 @@
 }
 
 .events-hero {
-  background: linear-gradient(110deg, v.$color-background 40%, #2a1218);
+  background: v.$color-background;
   border-bottom: 1px solid v.$color-border;
 }
 
@@ -208,10 +208,39 @@
   min-width: 0;
   border: 1px solid v.$color-border;
   border-top: 2px solid v.$color-red;
+  border-radius: 4px;
+  overflow: hidden;
   background: v.$color-surface;
+  transition:
+    transform 220ms v.$ease-smooth,
+    box-shadow 220ms v.$ease-smooth,
+    border-color 220ms ease;
 
-  &:is(:hover, :focus-visible) {
-    border-color: #ff6372;
+  @media (hover: hover) {
+    &:hover {
+      transform: translateY(-2px);
+      border-color: v.$color-red;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32);
+    }
+  }
+
+  &:focus-visible {
+    border-color: v.$color-red;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32);
+  }
+
+  &:active {
+    transform: none;
+    border-color: v.$color-red;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.24);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
   }
 }
 
@@ -254,7 +283,7 @@
 .events-card__action {
   margin-top: auto;
   padding-top: 8px;
-  color: #ff6372;
+  color: v.$color-red;
   font-family: v.$font-display;
   font-weight: 700;
 }

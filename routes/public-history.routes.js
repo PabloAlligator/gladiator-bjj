@@ -5,7 +5,7 @@ import {publishedHistory,publicHistory,historyFiles,historyDTO} from '../service
 import {renderHistoryIndex,renderHistoryDetail,historyConnections} from '../services/history-render.service.js';
 import {sendHistoryFile} from './history.routes.js';
 export function historyPreviewRouter({db,config,requireAuth}){const r=Router();r.get('/history-preview',requireAuth.page,asyncHandler(async(req,res)=>{
- const row=typeof req.query.id==='string'?await db.historyMaterial.findUnique({where:{id:req.query.id}}):null;
+ const row=typeof req.query.id==='string'?await db.historyMaterial.findUnique({where:{id:req.query.id,status:{not:'deleted'}}}):null;
  if(!row)return res.status(404).sendFile(path.join(config.ROOT,'admin-pages/not-found.html'));
  res.type('html').send(await renderHistoryDetail(config,historyDTO(row),await historyConnections(db,JSON.parse(row.payload)),true));
  }));return r;}

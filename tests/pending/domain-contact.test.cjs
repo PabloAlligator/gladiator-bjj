@@ -10,7 +10,7 @@ test('Кнопка звонка доступна без JS на всех неп�
   assert.ok(links[0].textContent.includes('Позвонить'));assert.equal(links[0].parentElement,d.body);assert.equal(d.querySelectorAll('link[href^="/site/css/contact-button.min.css"]').length,1,file);dom.window.close();count++;
  }
  assert.equal(count,18);
- for(const folder of ['people','history'])for(const file of fs.readdirSync(path.join(root,'views',folder)).filter(f=>f.endsWith('.html'))){const dom=new JSDOM(fs.readFileSync(path.join(root,'views',folder,file),'utf8'));assert.equal(dom.window.document.querySelectorAll('a.site-call[href="tel:+70000000000"]').length,1,'views/'+folder+'/'+file);dom.window.close();}
+ for(const folder of ['history'])for(const file of fs.readdirSync(path.join(root,'public',folder)).filter(f=>f.endsWith('.html'))){const dom=new JSDOM(fs.readFileSync(path.join(root,'public',folder,file),'utf8'));assert.equal(dom.window.document.querySelectorAll('a.site-call[href="tel:+70000000000"]').length,1,'public/'+folder+'/'+file);dom.window.close();}
  for(const file of fs.readdirSync(path.join(root,'admin-pages')).filter(f=>f.endsWith('.html')))assert.ok(!fs.readFileSync(path.join(root,'admin-pages',file),'utf8').includes('site-call'),file);
 });
 

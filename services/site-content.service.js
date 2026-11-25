@@ -60,7 +60,7 @@ export function siteWriter(db,c){
 }
 export function documentWriter(db,c){return async(req,id,action)=>db.$transaction(async tx=>{
  const old=id?await tx.federationDocument.findUnique({where:{id}}):null;
- if(id&&!old)throw new HttpError(404,'Документ не найден.');
+ if(id&&(!old||old.status==='deleted'))throw new HttpError(404,'Документ не найден.');
  if(old&&version(req.body?.version)!==old.version)conflict();
  let data;
  if(action==='save'){
@@ -81,7 +81,7 @@ export function documentWriter(db,c){return async(req,id,action)=>db.$transactio
  await tx.auditLog.create({data:{actorId:req.user.id,scope:'site-document',entityId:row.id,action}});
  return docDTO(row);
  }).catch(mapConcurrency);}
-export function usageOf(row,src){const w=row?.payload?JSON.parse(row.payload):{},p=row?.publishedPayload?JSON.parse(row.publishedPayload):{};const files=obj=>[obj.heroImage,obj.ctaImage,...(obj.leaders||[]).map(x=>x.image),obj.file].filter(Boolean);return {working:files(w).includes(src),published:files(p).includes(src)};}
+export function usageOf(row,src){if(row?.status==='deleted')return {working:false,published:false};const w=row?.payload?JSON.parse(row.payload):{},p=row?.publishedPayload?JSON.parse(row.publishedPayload):{};const files=obj=>[obj.heroImage,obj.ctaImage,...(obj.leaders||[]).map(x=>x.image),obj.file].filter(Boolean);return {working:files(w).includes(src),published:files(p).includes(src)};}
 // Точные подписи мест использования для медиатеки, без раскрытия неопубликованных данных наружу.
 export function siteAssetLocations(payload,src){
  if(!payload)return [];

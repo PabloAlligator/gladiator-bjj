@@ -22,7 +22,7 @@ function links(p,relations){
 }
 function galleryButton(g,section){return `<button class="history-photo" type="button" data-media-type="image" data-gallery-category="${e(section)}" data-full="${e(g.src)}" data-caption="${e(caption(g))}" aria-label="Открыть фотографию: ${e(g.caption||g.alt||'Архив')}">${image(g.src,g.alt||g.caption)}<span class="history-photo__type">${e(titles[section])}</span><span class="history-photo__caption">${e(g.caption||'Архивный снимок')}</span></button>`;}
 export async function renderHistoryIndex(config,rows){
- let html=await readFile(path.join(config.ROOT,'views/history/index.html'),'utf8');
+ let html=await readFile(path.join(config.ROOT,'public/history/index.html'),'utf8');
  const groups=Object.fromEntries(Object.keys(titles).map(k=>[k,rows.filter(x=>x.section===k)]));
  const story=groups.story.map(x=>`<article class="history-story">${x.cover?`<figure>${image(x.cover,x.coverAlt||x.title)}<figcaption>${e([x.coverCaption,x.coverCredit].filter(Boolean).join(' · '))}</figcaption></figure>`:'<figure class="history-story__placeholder">Исторический материал</figure>'}<div class="history-story__text"><span class="history-eyebrow">${e(prettyDate(x))}</span><h3>${e(x.title)}</h3><p>${escLines(x.lead)}</p>${x.author?`<p>Автор: ${e(x.author)}</p>`:''}<a class="history-text-link" href="${e(href(x))}">Читать материал</a></div></article>`).join('')||empty('Проверенных исторических материалов пока нет.');
  const tabs=groups.chronology.map((x,i)=>`<button type="button" role="tab" id="era-tab-${i}" aria-controls="era-${i}" aria-selected="${i===0}" tabindex="${i===0?0:-1}"><span>${String(i+1).padStart(2,'0')}</span>${e(x.title)}<small>${e(prettyDate(x))}</small></button>`).join('');
@@ -41,7 +41,7 @@ export async function renderHistoryIndex(config,rows){
  return html;
 }
 export async function renderHistoryDetail(config,p,relations,preview=false){
- let html=await readFile(path.join(config.ROOT,'views/history/detail.html'),'utf8');
+ let html=await readFile(path.join(config.ROOT,'public/history/detail.html'),'utf8');
  const l=links(p,relations),cover=p.cover?`<figure class="history-item-cover">${image(p.cover,p.coverAlt||p.title)}<figcaption>${e([p.coverCaption,p.coverCredit].filter(Boolean).join(' · '))}</figcaption></figure>`:'';
  const gallery=p.gallery.length?`<section class="history-item-gallery"><h2>Фотоархив</h2><div class="history-gallery" data-gallery-grid>${p.gallery.map(g=>galleryButton(g,p.section)).join('')}</div><div class="profile-gallery__more-wrap"><button class="history-item-back" type="button" data-gallery-more>Показать ещё</button></div></section>`:'';
  const body=String(p.body||'').split(/\n\s*\n/).map(s=>`<p>${escLines(s)}</p>`).join('');

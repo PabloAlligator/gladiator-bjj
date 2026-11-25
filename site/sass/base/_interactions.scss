@@ -1,0 +1,121 @@
+@use './variables' as v;
+
+$duration: 220ms;
+$ease: v.$ease-smooth;
+
+// Real controls and navigation links share timing. Card and gallery surfaces
+// retain their own component styles.
+$cards: '.roster-card, .training-card, .news-tile, .events-card, .club-team__card-link, .analytics-card, .heritage-card, .coach-card, .athlete-card__photo, .hall-legend__link, .profile-gallery__item, .history-photo, [data-athlete-photo], .events-gallery .events-image a, .cms-thumb, .shop-card__image, .shop-card h2 a';
+$buttons: 'button, input[type="button"], input[type="submit"], input[type="reset"], [role="button"], .btn, .header__signup, .hero__action, .home-button, .events-button, .club-actions__link, .stage-button, .history-button, .error-button, .site-call, .shop-button, .shop-quick-trigger, .header__cart';
+
+@mixin interactions($scope, $focus-color) {
+  #{$scope} :is(a[href], summary, #{$buttons}, select, input:not([type="hidden"]), textarea):not(:where(#{$cards})) {
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      color $duration $ease,
+      background-color $duration $ease,
+      border-color $duration $ease,
+      box-shadow $duration $ease,
+      opacity $duration $ease,
+      filter $duration $ease,
+      translate $duration $ease,
+      scale $duration $ease;
+
+    &:not(:disabled):not([aria-disabled="true"]):focus-visible {
+      outline: 2px solid $focus-color;
+      outline-offset: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  #{$scope} :is(a[href], summary):not(:where(#{$cards}, #{$buttons}, [aria-disabled="true"])) {
+    @media (hover: hover) {
+      &:hover { opacity: .84; }
+    }
+
+    &:active { opacity: .72; }
+  }
+
+  #{$scope} :is(#{$buttons}):not(:where(#{$cards}, :disabled, [aria-disabled="true"])) {
+    @media (hover: hover) {
+      &:hover {
+        box-shadow: var(--control-hover-shadow, 0 4px 12px rgba(0, 0, 0, .14));
+        filter: var(--control-hover-filter, brightness(1.08));
+      }
+    }
+
+    &:active {
+      box-shadow: none;
+      filter: var(--control-active-filter, brightness(.94));
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      @media (hover: hover) {
+        &:hover { translate: 0 -2px; }
+      }
+
+      &:active {
+        translate: none;
+        scale: .98;
+      }
+    }
+  }
+
+  #{$scope} :is(select, input:not([type="hidden"]), textarea):not(:where(:disabled, [aria-disabled="true"], [readonly])) {
+    @media (hover: hover) {
+      &:hover { border-color: $focus-color; }
+    }
+
+    &:focus-visible { border-color: $focus-color; }
+  }
+
+  #{$scope} :is(select, input[type="checkbox"], input[type="radio"]):not(:where(:disabled, [aria-disabled="true"], [readonly])) {
+    &:active { filter: brightness(.94); }
+  }
+}
+
+// Match the header's red parallelogram without skewing its text or icon.
+// The outline remains outside the painted shape for keyboard navigation.
+@mixin red-button {
+  --control-hover-shadow: none;
+  --control-hover-filter: none;
+  --control-active-filter: none;
+  position: relative;
+  isolation: isolate;
+  border-color: transparent;
+  border-radius: 0 !important;
+  background: transparent;
+  color: v.$color-white;
+
+  &::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background-color: v.$color-red;
+    clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
+    pointer-events: none;
+    content: '';
+    transition: background-color $duration $ease;
+  }
+
+  &:not(:disabled):not([aria-disabled="true"]):is(:focus-visible, :active)::before {
+    background-color: v.$color-red-hover;
+  }
+
+  @media (hover: hover) {
+    &:not(:disabled):not([aria-disabled="true"]):hover::before {
+      background-color: v.$color-red-hover;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before { transition: none; }
+  }
+
+  @media (forced-colors: active) {
+    border-color: ButtonText;
+  }
+}

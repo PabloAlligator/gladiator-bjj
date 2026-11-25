@@ -21,7 +21,7 @@ export function createNewsService(db,config){
  return db.$transaction(async tx=>{
   const id=req.params.id,expected=id?v.version(req.body.version):null;
   const old=id?await tx.news.findUnique({where:{id}}):null;
-  if(id&&!old)throw new v.HttpError(404,'Новость не найдена.');
+  if(id&&(!old||old.status==='deleted'))throw new v.HttpError(404,'Новость не найдена.');
   if(old&&old.version!==expected)throw new v.HttpError(409,'Новость уже изменена. Откройте актуальную версию в другой вкладке и перенесите правки.');
   let data;
   if(action==='save'){

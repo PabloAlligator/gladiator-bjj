@@ -61,7 +61,7 @@ export function createPeopleWriter(db,config){return async(req,action)=>{
  if(!req.body||typeof req.body!=='object'||Array.isArray(req.body))fail('Ожидается JSON-объект.');
  return db.$transaction(async tx=>{
   const id=req.params.id,expected=id?version(req.body.version):null,old=id?await tx.person.findUnique({where:{id}}):null;
-  if(id&&!old)throw new HttpError(404,'Человек не найден.');
+  if(id&&(!old||old.status==='deleted'))throw new HttpError(404,'Человек не найден.');
   if(old&&old.version!==expected)throw new HttpError(409,'Профиль уже изменён. Откройте актуальную запись в другой вкладке и перенесите правки.');
   let data;
   if(action==='save'){

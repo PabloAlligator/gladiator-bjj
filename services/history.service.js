@@ -43,7 +43,7 @@ export function createHistoryWriter(db,c){return async(req,action)=>{
  if(!req.body||typeof req.body!=='object'||Array.isArray(req.body))fail('Ожидается JSON-объект.');
  return db.$transaction(async tx=>{
   const id=req.params.id,expected=id?version(req.body.version):null,old=id?await tx.historyMaterial.findUnique({where:{id}}):null;
-  if(id&&!old)throw new HttpError(404,'Исторический материал не найден.');
+  if(id&&(!old||old.status==='deleted'))throw new HttpError(404,'Исторический материал не найден.');
   if(old&&old.version!==expected)throw new HttpError(409,'Материал изменён в другой вкладке. Ваши правки остались в форме. Сравните версии перед повторным сохранением.');
   let data;
   if(action==='save'){

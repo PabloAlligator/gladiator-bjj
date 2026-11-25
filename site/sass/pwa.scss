@@ -1,4 +1,5 @@
 @use './base/variables' as v;
+@use './base/interactions' as ui;
 .pwa-install, .pwa-network, .pwa-update {box-sizing:border-box;font:14px/1.45 Arial,sans-serif;overflow-wrap:anywhere;}
 // Compact top notification follows IDEAL's install surface.
 .pwa-install {
@@ -20,7 +21,7 @@
  &__button{min-height:34px;margin:0;padding:7px 11px;border:1px solid #bc202b;background:#bc202b;color:#fff!important;border-radius:9px;font:600 11px/1.35 "Segoe UI",Arial,sans-serif;white-space:nowrap;cursor:pointer;transition:filter .2s,transform .2s;}
  &__button--later{background:#40506a;border-color:#40506a;}
  &__button:hover{filter:brightness(.93);}
- &__button:active{transform:scale(.98);}
+ 
  &__button:focus-visible,&__close:focus-visible{outline:3px solid #bc202b;outline-offset:2px;}
  &__close{position:absolute;top:5px;right:5px;display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--pwa-muted);font:22px/1 Arial,sans-serif;cursor:pointer;}
  &__close:hover{background:#80808020;}
@@ -39,3 +40,27 @@
 }
 html.admin-locked body > * {visibility:hidden!important;}
 html.admin-locked body > [data-session-lock] {visibility:visible!important;}
+
+
+body:not(.admin):not(.pwa-offline--admin) {
+  .pwa-install__button:not(.pwa-install__button--later),
+  &.pwa-offline button {
+    @include ui.red-button;
+    color: white !important;
+    padding-inline: 20px;
+  }
+}
+
+.admin .pwa-install__button:not(.pwa-install__button--later),
+.pwa-offline--admin button {
+  background: #eec453;
+  border-color: #eec453;
+  color: #121e36 !important;
+
+  &:is(:hover, :focus-visible, :active) { background: #d8ae3e; }
+}
+
+@include ui.interactions(".pwa-install", v.$color-red);
+@include ui.interactions(".pwa-offline", v.$color-red);
+@include ui.interactions(".admin .pwa-install", #916700);
+@include ui.interactions(".pwa-offline--admin", #916700);

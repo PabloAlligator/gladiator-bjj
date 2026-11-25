@@ -21,12 +21,12 @@ export default function createSiteAdminRouter({db,config,requireAuth,validateOri
  r.use(requireAuth);
  r.get('/pages',asyncHandler(async(_req,res)=>res.json({success:true,pages:await Promise.all(pageKeys.map(async key=>pageDTO(await db.sitePage.findUnique({where:{key}}),key)))})));
  r.get('/pages/:key',asyncHandler(async(req,res)=>{if(!pageKeys.includes(req.params.key))throw new HttpError(404,'Страница не найдена.');res.json({success:true,page:pageDTO(await db.sitePage.findUnique({where:{key:req.params.key}}),req.params.key)});}));
- r.get('/documents',asyncHandler(async(_req,res)=>res.json({success:true,documents:(await db.federationDocument.findMany({orderBy:{updatedAt:'desc'}})).map(docDTO)})));
- r.get('/documents/:id',asyncHandler(async(req,res)=>{const row=await db.federationDocument.findUnique({where:{id:req.params.id}});if(!row)throw new HttpError(404,'Документ не найден.');res.json({success:true,document:docDTO(row)});}));
+ r.get('/documents',asyncHandler(async(_req,res)=>res.json({success:true,documents:(await db.federationDocument.findMany({where:{status:{not:'deleted'}},orderBy:{updatedAt:'desc'}})).map(docDTO)})));
+ r.get('/documents/:id',asyncHandler(async(req,res)=>{const row=await db.federationDocument.findUnique({where:{id:req.params.id,status:{not:'deleted'}}});if(!row)throw new HttpError(404,'Документ не найден.');res.json({success:true,document:docDTO(row)});}));
  const mediaData=async()=>{
   const assets=await db.siteAsset.findMany({orderBy:{createdAt:'desc'}});
   const pages=await db.sitePage.findMany(),docs=await db.federationDocument.findMany();
-  return assets.map(a=>{const row=a.ownerKey.startsWith('page:')?pages.find(p=>p.key===a.ownerKey.slice(5)):docs.find(d=>a.ownerKey===ownerDocument(d.id));const used=usageOf(row,'/media/site/'+a.id);return {id:a.id,src:'/media/site/'+a.id,ownerKey:a.ownerKey,ownerName:a.ownerKey.startsWith('page:')?({home:'Главная',federation:'О клуба',contacts:'Контакты'}[a.ownerKey.slice(5)]||a.ownerKey):'Документ: '+(row?.title||a.ownerKey.slice(9)),kind:a.kind,size:a.size,version:row?.version||0,...used,workingLocations:siteAssetLocations(row?.payload,'/media/site/'+a.id),publishedLocations:siteAssetLocations(row?.publishedPayload,'/media/site/'+a.id),canDelete:!used.working&&!used.published};});
+  return assets.map(a=>{const row=a.ownerKey.startsWith('page:')?pages.find(p=>p.key===a.ownerKey.slice(5)):docs.find(d=>a.ownerKey===ownerDocument(d.id));const used=usageOf(row,'/media/site/'+a.id);return {id:a.id,src:'/media/site/'+a.id,ownerKey:a.ownerKey,ownerName:a.ownerKey.startsWith('page:')?({home:'Главная',federation:'О клуба',contacts:'Контакты'}[a.ownerKey.slice(5)]||a.ownerKey):'Документ: '+(row?.title||a.ownerKey.slice(9)),kind:a.kind,size:a.size,version:row?.version||0,...used,workingLocations:siteAssetLocations(row?.status==='deleted'?null:row?.payload,'/media/site/'+a.id),publishedLocations:siteAssetLocations(row?.publishedPayload,'/media/site/'+a.id),canDelete:!used.working&&!used.published};});
  };
  r.get('/media',asyncHandler(async(_req,res)=>res.json({success:true,assets:await mediaData(),sections:{news:await db.newsAsset.count(),people:await db.personAsset.count(),competitions:await db.competitionAsset.count(),history:await db.historyAsset.count()}})));
  r.get('/media/:id',asyncHandler(async(req,res)=>{if(!/^[a-f0-9]{48}\.(webp|pdf)$/.test(req.params.id)||!await db.siteAsset.findUnique({where:{id:req.params.id}}))throw new HttpError(404,'Файл не найден.');sendSiteMedia(res,config,req.params.id);}));
@@ -39,7 +39,7 @@ export default function createSiteAdminRouter({db,config,requireAuth,validateOri
  const uploads=rateLimit({windowMs:60_000,limit:70,standardHeaders:'draft-8',legacyHeaders:false,message:{success:false,message:'Слишком много загрузок. Попробуйте позже.'}});
  async function owner(req,kind){if(kind==='image'){
   if(!pageKeys.includes(req.params.key))throw new HttpError(404,'Страница не найдена.');return ownerPage(req.params.key);
- }const doc=await db.federationDocument.findUnique({where:{id:req.params.id}});if(!doc)throw new HttpError(404,'Документ не найден.');if(doc.status==='archived')throw new HttpError(422,'Сначала восстановите документ.');return ownerDocument(doc.id);}
+ }const doc=await db.federationDocument.findUnique({where:{id:req.params.id,status:{not:'deleted'}}});if(!doc)throw new HttpError(404,'Документ не найден.');if(doc.status==='archived')throw new HttpError(422,'Сначала восстановите документ.');return ownerDocument(doc.id);}
  async function upload(req,res,kind){
   const ownerKey=await owner(req,kind);
   if(await db.siteAsset.count({where:{ownerKey}})>=100)throw new HttpError(422,'Максимум 100 файлов для одной записи. Удалите неиспользуемые.');

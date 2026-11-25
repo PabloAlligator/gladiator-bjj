@@ -1,4 +1,5 @@
 @use '../base/variables' as v;
+@use '../base/interactions' as ui;
 
 .events-page {
   overflow-wrap: anywhere;
@@ -162,14 +163,9 @@
 }
 
 .events-button {
-  padding: 8px 20px;
+  padding: 8px 24px;
   border: 1px solid transparent;
-  background: v.$color-red;
-  color: v.$color-white;
-
-  &:is(:hover, :focus-visible) {
-    background: v.$color-red-hover;
-  }
+  @include ui.red-button;
 }
 
 .events-reset:hover {

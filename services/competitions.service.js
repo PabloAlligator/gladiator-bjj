@@ -41,7 +41,7 @@ export function createCompetitionWriter(db,config){return async(req,action)=>{
  if(!req.body||typeof req.body!=='object'||Array.isArray(req.body))fail('Ожидается JSON-объект.');
  return db.$transaction(async tx=>{
   const id=req.params.id,expected=id?version(req.body.version):null,old=id?await tx.competition.findUnique({where:{id}}):null;
-  if(id&&!old)throw new HttpError(404,'Соревнование не найдено.');
+  if(id&&(!old||old.status==='deleted'))throw new HttpError(404,'Соревнование не найдено.');
   if(old&&old.version!==expected)throw new HttpError(409,'Соревнование уже изменено. Откройте актуальную запись в другой вкладке и перенесите правки.');
   let data;
   if(action==='save'){

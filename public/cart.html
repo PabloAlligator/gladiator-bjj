@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ru">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="robots" content="noindex,nofollow">
+ <meta name="description" content="{{DESCRIPTION}}">
+ <meta name="theme-color" content="#0a0a0a">
+ <title>{{TITLE}} — GLADIATOR BJJ</title>
+ <link rel="icon" href="/favicon.ico">
+ <link rel="stylesheet" href="/site/css/main.min.css?v=shop-motion-20261125-3">
+ <script src="/site/scripts/main.js?v=shop-20261125" defer></script>
+ <script src="/site/scripts/shop.js?v=7" defer></script>
+</head>
+<body>
+ {{HEADER}}
+ <main class="shop-main" id="page-content"><div class="container shop-container">
+ <a class="shop-back" href="/shop">Продолжить выбор</a><div class="shop-heading"><h1>Корзина</h1></div>
+ <div class="shop-cart" data-shop-cart><section aria-label="Товары в корзине" data-cart-lines><p>Загружаем корзину…</p></section>
+ <section class="shop-summary" aria-labelledby="shop-summary-title"><h2 id="shop-summary-title">По каталогу</h2><strong data-cart-total>—</strong>
+ <p>Окончательную стоимость и способ получения согласуем после заявки.</p>
+ {{CART_FORM}}
+ <p class="shop-message" data-shop-result role="status"></p>
+ </section></div>
+ <section class="shop-receipt" data-shop-receipt aria-labelledby="shop-receipt-title" hidden>
+ <h2 id="shop-receipt-title" tabindex="-1">Заявка принята</h2>
+ <p>Номер заявки: <strong data-shop-request-number></strong></p>
+ <p>Свяжемся с вами, чтобы согласовать наличие, стоимость и получение.</p>
+ <a class="shop-button shop-button--plain" href="/shop">Вернуться в каталог</a>
+ </section><noscript>Для корзины и отправки заявки включите JavaScript.</noscript>
+ {{LEGAL}}<div class="shop-message shop-notification" data-shop-notice role="status" aria-live="polite"></div></div></main>
+ {{FOOTER}}
+</body>
+</html>

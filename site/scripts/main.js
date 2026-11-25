@@ -10,7 +10,7 @@
 
     try {
       const componentUrl = new URL(url.replace(/^\//, ''), projectRoot);
-      componentUrl.searchParams.set('v', 'header4');
+      componentUrl.searchParams.set('v', 'shop-20261125');
       const response = await fetch(componentUrl, { cache: 'no-store' });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       target.insertAdjacentHTML('beforebegin', await response.text());
@@ -78,7 +78,7 @@
 
     function markCurrent() {
       const current = window.location;
-      const section = document.querySelector('.events-page[data-section]')?.dataset.section;
+      const section = document.querySelector('.events-page[data-section]')?.dataset.section || (current.pathname.startsWith('/shop/') || ['/cart','/shop-policy','/shop-consent'].includes(current.pathname) ? '/shop' : undefined);
       header.querySelectorAll('.header__nav a, .mobile-menu__nav a').forEach((link) => {
         const url = new URL(link.href);
         const parent = url.pathname === section;
@@ -89,8 +89,29 @@
         else link.removeAttribute('aria-current');
       });
       if (events) events.classList.toggle('is-current', Boolean(events.querySelector('.is-current')));
+      const cartLink = header.querySelector('.header__cart');
+      if (cartLink) {
+        cartLink.toggleAttribute('data-current', current.pathname === '/cart');
+        if (current.pathname === '/cart') cartLink.setAttribute('aria-current', 'page');
+        else cartLink.removeAttribute('aria-current');
+      }
     }
 
+    function updateCartCount() {
+      let count = 0;
+      try {
+        const lines = JSON.parse(localStorage.getItem('bjj-shop-cart-v1') || '[]');
+        if (Array.isArray(lines)) count = lines.filter(line => line && Number.isInteger(line.quantity) && line.quantity > 0 && line.quantity <= 20).slice(0, 30).reduce((sum, line) => sum + line.quantity, 0);
+      } catch {}
+      for (const badge of header.querySelectorAll('[data-shop-count]')) {
+        badge.hidden = count === 0;
+        badge.textContent = count;
+        badge.closest('a').setAttribute('aria-label', count ? 'Корзина. Товаров: ' + count : 'Корзина');
+      }
+    }
+    updateCartCount();
+    window.addEventListener('storage', updateCartCount);
+    document.addEventListener('shop:cart-change', updateCartCount);
     markCurrent();
     window.addEventListener('hashchange', markCurrent);
     document.addEventListener('click', (event) => {

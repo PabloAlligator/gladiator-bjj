@@ -1,5 +1,5 @@
 // Only this application's technical offline shell is cached. No runtime cache.
-const CACHE='gladiator-bjj-public-shell-v1';
+const CACHE='gladiator-bjj-public-shell-v2';
 const OWNED=/^gladiator-bjj-public-shell-v[0-9]+$/;
 const OFFLINE='/pwa/offline';
 const SHELL=[OFFLINE,'/site/css/pwa.min.css','/site/scripts/pwa-offline.js'];

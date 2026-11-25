@@ -11,7 +11,7 @@ import {sendCompetitionFile} from './competitions.routes.js';
 export function competitionPreviewRouter({db, config, requireAuth}) {
   const router = Router();
   router.get('/competition-preview', requireAuth.page, asyncHandler(async (req, res) => {
-    const row = typeof req.query.id === 'string' ? await db.competition.findUnique({where: {id: req.query.id}}) : null;
+    const row = typeof req.query.id === 'string' ? await db.competition.findUnique({where: {id: req.query.id,status:{not:'deleted'}}}) : null;
     if (!row) return res.status(404).sendFile(path.join(config.ROOT, 'admin-pages/not-found.html'));
     res.type('html').send(await renderCompetition(config, competitionDTO(row), await publishedPeople(db), true));
   }));

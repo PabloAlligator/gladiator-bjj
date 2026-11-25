@@ -1,5 +1,6 @@
 @use './base/base';
 @use './base/variables' as v;
+@use './base/interactions' as ui;
 
 @use './components/header';
 @use './components/footer';
@@ -8,6 +9,10 @@
 @use './pages/training';
 @use './pages/team';
 @use './pages/events';
+@use './pages/shop';
+@use './pages/product';
+@use './pages/cart';
+@use './pages/shop-motion';
 
 // Временные стили внутренних страниц.
 .placeholder a:is(:hover, :focus-visible),
@@ -169,24 +174,11 @@
   line-height: 1.15;
   text-align: center;
   text-transform: uppercase;
-  transition:
-    border-color v.$duration-normal v.$ease-smooth,
-    background-color v.$duration-normal v.$ease-smooth,
-    transform v.$duration-normal v.$ease-smooth;
 }
 
 .hero__action--primary {
   min-width: 14.64vw;
-}
-
-.hero__action--primary::before {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: v.$color-red;
-  clip-path: polygon(0 0, 100% 0, 93% 100%, 0 100%);
-  transition: background-color v.$duration-normal v.$ease-smooth;
-  content: '';
+  @include ui.red-button;
 }
 
 .hero__action-icon {
@@ -204,24 +196,6 @@
 .hero__action--outline:is(:hover, :focus-visible, :active) {
   border-color: v.$color-red;
   background-color: v.$color-card;
-}
-
-.hero__action--primary:is(:hover, :focus-visible, :active)::before,
-.home-button:is(:hover, :focus-visible, :active)::before {
-  background-color: v.$color-red-hover;
-}
-
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .hero__action:hover,
-  .home-button:hover {
-    transform: translateY(-3px);
-  }
-}
-@media (prefers-reduced-motion: no-preference) {
-  .hero__action:active,
-  .home-button:active {
-    transform: scale(0.98);
-  }
 }
 
 .hero__action:focus-visible {
@@ -484,16 +458,7 @@
   min-height: 44px;
   padding: 10px 28px;
   color: v.$color-white;
-  transition: transform v.$duration-normal v.$ease-smooth;
-}
-.home-button::before {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: v.$color-red;
-  transform: skewX(-16deg);
-  content: '';
-  transition: background-color v.$duration-normal v.$ease-smooth;
+  @include ui.red-button;
 }
 .home-link {
   min-height: 44px;
@@ -1250,3 +1215,5 @@
     transition: none;
   }
 }
+
+@include ui.interactions("body:not(.admin)", v.$color-red);

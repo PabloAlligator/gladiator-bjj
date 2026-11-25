@@ -1,4 +1,5 @@
 @use '../base/variables' as v;
+@use '../base/interactions' as ui;
 
 // Общая высота хедера и отступ содержимого.
 $header-bar-height: 76px;
@@ -177,9 +178,6 @@ main section[id] {
   border: 0;
   background: transparent;
   color: v.$color-text;
-  transition:
-    background-color v.$duration-fast v.$ease-smooth,
-    transform v.$duration-fast v.$ease-smooth;
 }
 .header__search svg {
   width: 20px;
@@ -207,13 +205,6 @@ main section[id] {
   outline-offset: 3px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .header__search:active,
-  .header__burger:active,
-  .site-search__close:active {
-    transform: scale(0.98);
-  }
-}
 
 .header__signup {
   position: relative;
@@ -231,39 +222,9 @@ main section[id] {
   line-height: 1.2;
   text-transform: uppercase;
   white-space: nowrap;
-  transition: transform v.$duration-normal v.$ease-smooth;
-}
-.header__signup::before {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background-color: v.$color-red;
-  clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
-  content: '';
-  transition: background-color v.$duration-normal v.$ease-smooth;
-}
-.header__signup:focus-visible {
-  outline-color: v.$color-white;
-}
-.header__signup:is(:focus-visible, :active)::before {
-  background-color: v.$color-red-hover;
+  @include ui.red-button;
 }
 
-@media (hover: hover) {
-  .header__signup:hover::before {
-    background-color: v.$color-red-hover;
-  }
-}
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .header__signup:hover {
-    transform: translateY(-3px);
-  }
-}
-@media (prefers-reduced-motion: no-preference) {
-  .header__signup:active {
-    transform: scale(0.98);
-  }
-}
 .header__signup-icon {
   width: 17px;
   height: 17px;
@@ -697,4 +658,37 @@ body.menu-open {
   .site-search * {
     transition: none;
   }
+}
+
+// Permanent equipment cart, matching the existing search control.
+.header__cart {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 44px;
+  color: v.$color-text;
+}
+.header__cart[data-current], .header__cart:hover { color: #f04b5b; }
+.header__cart [data-shop-count] {
+  position: absolute; top: 1px; right: -2px; min-width: 17px; height: 17px;
+  display: grid; place-items: center; border-radius: 10px; padding-inline: 4px;
+  font: 700 11px/1 v.$font-display; background: v.$color-red; color: #fff;
+}
+.header__cart [data-shop-count][hidden] { display: none; }
+@media (min-width: 1181px) and (max-width: 1450px) {
+  .header__nav { gap: 10px; }
+  .header__actions { gap: 6px; }
+  .header__cart { flex-basis: 32px; width: 32px; }
+}
+@media (max-width: 420px) {
+  .header__container { padding-inline: 14px; }
+  .header__inner { padding-inline: 8px; gap: 6px; }
+  .header__wordmark { font-size: 15px; padding-left: 6px; }
+  .header__logo { width: 36px; height: 40px; }
+  .header__brand { gap: 6px; }
+  .header__actions { gap: 1px; }
+  .header__search, .header__burger, .header__cart { width: 36px; }
+  .header__cart { flex-basis: 36px; }
 }

@@ -23,3 +23,6 @@ var/history-media/
 var/site-media/
 backups/*
 !backups/.gitkeep
+
+# Фотографии магазина — отдельное постоянное хранилище.
+var/shop-media/

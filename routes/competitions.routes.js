@@ -17,15 +17,15 @@ export function sendCompetitionFile(res,config,file){
 }
 export default function createCompetitionsRouter({db,config,requireAuth,validateOrigin}){
  const router=Router(),write=createCompetitionWriter(db,config);router.use(requireAuth);
- router.get('/',asyncHandler(async(_req,res)=>res.json({success:true,competitions:(await db.competition.findMany({orderBy:{updatedAt:'desc'}})).map(competitionDTO)})));
+ router.get('/',asyncHandler(async(_req,res)=>res.json({success:true,competitions:(await db.competition.findMany({where:{status:{not:'deleted'}},orderBy:{updatedAt:'desc'}})).map(competitionDTO)})));
  router.get('/media/:file',asyncHandler(async(req,res)=>{if(!/^[a-f0-9]{48}\.(webp|pdf)$/.test(req.params.file)||!await db.competitionAsset.findUnique({where:{id:req.params.file}}))throw new HttpError(404,'Файл не найден.');sendCompetitionFile(res,config,req.params.file);}));
- router.get('/:id',asyncHandler(async(req,res)=>{const row=await db.competition.findUnique({where:{id:req.params.id}});if(!row)throw new HttpError(404,'Соревнование не найдено.');res.json({success:true,competition:competitionDTO(row)});}));
+ router.get('/:id',asyncHandler(async(req,res)=>{const row=await db.competition.findUnique({where:{id:req.params.id,status:{not:'deleted'}}});if(!row)throw new HttpError(404,'Соревнование не найдено.');res.json({success:true,competition:competitionDTO(row)});}));
  router.get('/:id/media',asyncHandler(async(req,res)=>res.json({success:true,...await listCompetitionMedia(db,req.params.id)})));
  router.use(validateOrigin,requireCsrf);
  router.delete('/:id/media/:file',asyncHandler(async(req,res)=>res.json({success:true,entity:await deleteCompetitionMedia(db,config,req)})));
  const limiter=rateLimit({windowMs:60000,limit:60,standardHeaders:'draft-8',legacyHeaders:false,message:{success:false,message:'Слишком много загрузок. Повторите через минуту.'}});
  for(const kind of ['image','document'])router.post('/:id/upload-'+kind,limiter,express.raw({type:()=>true,limit:kind==='image'?'8mb':'10mb'}),asyncHandler(async(req,res)=>{
-  const parent=await db.competition.findUnique({where:{id:req.params.id}});if(!parent)throw new HttpError(404,'Соревнование не найдено.');if(parent.status==='archived')throw new HttpError(422,'Сначала восстановите соревнование.');
+  const parent=await db.competition.findUnique({where:{id:req.params.id,status:{not:'deleted'}}});if(!parent)throw new HttpError(404,'Соревнование не найдено.');if(parent.status==='archived')throw new HttpError(422,'Сначала восстановите соревнование.');
   if(await db.competitionAsset.count({where:{competitionId:parent.id}})>=150)throw new HttpError(422,'Максимум 150 загрузок на соревнование. Удалите неиспользуемые файлы.');
   const mime=req.get('content-type')?.split(';')[0];if(!Buffer.isBuffer(req.body)||!req.body.length)throw new HttpError(422,'Выберите файл.');let bytes;
   if(kind==='image'){
